@@ -1,0 +1,9 @@
+name: "Taxonomy Term Authoring Information"
+type: module
+description: Add authoring information (date created, author) to taxonomy terms.
+package: Taxonomy
+configure: term_authoring_info.settings
+core: 8.x
+dependencies:
+  - taxonomy
+  - field_group

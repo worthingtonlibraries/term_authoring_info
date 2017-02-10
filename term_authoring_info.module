@@ -1,0 +1,175 @@
+<?php
+
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\term_authoring_info\Controller\TermAuthoringInfoManageFields;
+use Drupal\term_authoring_info\Controller\TermAuthoringInfoManageGroups;
+use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add 'Display authoring information' field to the vocabulary 'Edit' screen.
+ */
+function term_authoring_info_form_taxonomy_vocabulary_form_alter(&$form, &$form_state, $form_id) {
+
+  // Retrieve the vocab ID.
+  $vid = $form['vid']['#default_value'];
+
+  // Set the referring URL as a variable.
+  $url_previous = \Drupal::request()->server->get('HTTP_REFERER');
+
+  // Get the path to this module's main config page.
+  $url_term_authoring_config = Url::fromRoute('term_authoring_info.settings')->toString();
+
+  $term_authoring_info_redirect = NULL;
+
+  // Determine if the user just linked over
+  // from this module's main config page.
+  if (strpos($url_previous, $url_term_authoring_config) !== FALSE) {
+    $term_authoring_info_redirect = 'term_authoring_info.settings';
+  }
+
+  // #default_value is always populated except when
+  // the vocabulary is first created; then use #value.
+  if ((empty($form['vid']['#default_value'])) && (!empty($form['vid']['#value']))) { 
+    $vid = $form['vid']['#value'];
+  }
+
+  $entities = entity_load_multiple('vocab_display_status');
+  // Set the checkbox state for this vocabulary.
+  $checkbox_value = ((!empty($entities[$vid])) ? $entities[$vid]->get('state') : 0);
+
+  //Create the 'Display authoring information' field.
+  $form['term_authoring_info'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Display authoring information'),
+    '#default_value' => $checkbox_value,
+    '#description' => t('Author username and publish date fields will be displayed.'),
+    '#weight' => 1,
+  ];
+
+  // If the user should redirect back to this module's
+  // main config page, store the appropriate route.
+  $form['term_authoring_info_redirect'] = [
+    '#type' => 'hidden',
+    '#default_value' => $term_authoring_info_redirect,
+  ];
+
+  // Add a submit handler for the 'Display authoring information' field.
+  $form['actions']['submit']['#submit'][] = 'term_authoring_info_taxonomy_vocabulary_form_submit';
+
+}
+
+
+/**
+ * Submit handler the 'Display authoring information' field.
+ */
+function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state) {
+
+  // Retrieve the vocab ID.
+  $vid = $form['vid']['#default_value'];
+
+  // #default_value is always populated except when
+  // the vocabulary is first created; then use #value.
+  if ((empty($form['vid']['#default_value'])) && (!empty($form['vid']['#value']))) { 
+    $vid = $form['vid']['#value'];
+  }
+
+  // Retrieve the Drupal route that page
+  // should redirect to (if applicable).
+  $term_authoring_info_redirect = $form_state->getValue('term_authoring_info_redirect');
+
+  // Set the checkbox state as a variable.
+  $checkbox = $form_state->getValue('term_authoring_info'); 
+
+  // Attempt to load the entity configuration value for this vocabulary.
+  $entity = \Drupal::entityTypeManager()->getStorage('vocab_display_status')->load($vid);
+
+  // Determine if an entity configuration value
+  // for this vocabulary doesn't exist yet.
+  if (empty($entity)) {
+    // Create a new entity configuration value.
+    $entity = \Drupal::entityManager()->getStorage('vocab_display_status')->create();
+  }
+
+  // Update the entity with the new values.
+  $entity->id = $vid;
+  $entity->state = $checkbox;
+
+  // Save the changes. 
+  $entity->save();
+
+  // Determine if 'Authoring Information' fields should be created.
+  if ($checkbox == 1) {
+
+    // Create the 'Authoring Information' fields.
+    TermAuthoringInfoManageFields::createFields($vid);
+
+    // Create the 'Authoring Information' field group.
+    TermAuthoringInfoManageGroups::createGroup($vid);
+
+  }
+  // Otherwise, 'Authoring Information' fields should be deleted.
+  else {
+
+    // Delete the 'Authoring Information' fields.
+    TermAuthoringInfoManageFields::deleteFields($vid);
+
+    // Delete the 'Authoring Information' field group.
+    TermAuthoringInfoManageGroups::deleteGroup($vid);
+
+  }
+
+  // Determine if this form should redirect back
+  // to this module's main configuration screen.
+  if (!empty($term_authoring_info_redirect)) {
+    $form_state->setRedirect($term_authoring_info_redirect);
+  }
+
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Add a custom submit handler if a vocabulary includes Authoring Information.
+ */
+function term_authoring_info_form_alter(&$form, &$form_state, $form_id) {
+
+  // Ensure that this is a taxonomy term form.
+  if (strpos($form_id, 'taxonomy_term') !== FALSE) {
+
+    $vid = $form['vid']['#value'];
+
+    // Attempt to load the author info entity configuration for this vocabulary.
+    $entity = \Drupal::entityTypeManager()->getStorage('vocab_display_status')->load($vid);
+
+    // Ensure authoring info for this vocabulary should be displayed.
+    if ((!empty($entity)) && ($entity->state == 1)) {
+      // Set the custom submit handler as the first one to be processed.
+      array_unshift($form['actions']['submit']['#submit'], 'term_authoring_info_populate_empty_fields');
+    }
+  }
+
+}
+
+/**
+ * Submit handler for populating any blank 'Author Information' fields.
+ */
+function term_authoring_info_populate_empty_fields($form, &$form_state) {
+
+  // Determine if the 'Authored by' field is empty.
+  if (empty($form_state->getValue('field_term_authoring_info_uid')[0]['target_id'])) {
+    $userCurrent = \Drupal::currentUser();
+
+    // Set the current logged-in user as the author.
+    $form_state->getValue('field_term_authoring_info_uid')[0]['target_id'] = $userCurrent->id();
+  }
+
+  // Determine if the 'Authored on' field is empty.
+  if (empty($form_state->getValue('field_term_authoring_datecreated')[0]['value'])) {
+    // Set the current timestamp as the created date.
+    $form_state->getValue('field_term_authoring_datecreated')[0]['value'] = DrupalDateTime::createFromTimestamp(time());
+  }
+
+}

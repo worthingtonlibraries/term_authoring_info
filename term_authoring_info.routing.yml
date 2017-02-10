@@ -1,0 +1,16 @@
+term_authoring_info.settings:
+  path: 'admin/config/content/term-authoring-info'
+  defaults:
+    # '_entity_list' tells Drupal to use an entity list controller.
+    # The entity ID is below. Drupal then looks in the entity's annotation
+    # for the class to load in the "list" entry under "controllers."
+    # @see \Drupal\Core\Entity\Enhancer\EntityRouteEnhancer
+    _entity_list: 'vocab_display_status'
+    _title: 'Taxonomy term authoring information'
+  requirements:
+    _permission: 'administer taxonomy'
+
+entity.vocab_display_status.edit_form:
+  path: '/admin/structure/taxonomy/manage/{vocab_display_status}'
+  requirements:
+    _permission: 'administer taxonomy'

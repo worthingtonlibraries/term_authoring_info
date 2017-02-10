@@ -1,0 +1,13 @@
+term_authoring_info.vocab_display_status.*:
+  type: config_entity
+  label: "Taxonomy authoring info status"
+  mapping:
+    id:
+      type: string
+      label: 'ID / machine name of the vocabulary (and unique ID for this entity)'
+    state:
+      type: int
+      label: '"Display authoring information" checkbox: checked (1) or unchecked (0)'
+    langcode:
+      type: string
+      label: "Default language"

@@ -1,0 +1,5 @@
+term_authoring_info.libraries.main_css:
+  version: 1.x
+  css:
+    theme:
+      css/term_authoring_info.css: {}

@@ -1,0 +1,5 @@
+term_authoring_info.menu.settings:
+  title: "Taxonomy term authoring information"
+  description: "Add authoring information (date created, author) to taxonomy terms."
+  route_name: term_authoring_info.settings
+  parent: system.admin_config_content

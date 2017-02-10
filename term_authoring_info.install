@@ -1,0 +1,35 @@
+<?php
+
+use Drupal\term_authoring_info\Controller\TermAuthoringInfoManageFields;
+use Drupal\term_authoring_info\Controller\TermAuthoringInfoManageGroups;
+
+/**
+ * @file
+ * Install, update and uninstall functions for the term_authoring_info module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Remove the Authoring Information fields from all vocabularies.
+ *
+ * @see hook_uninstall()
+ *
+ * @ingroup term_authoring_info
+ */
+function term_authoring_info_uninstall() {
+
+  $vocabularies = taxonomy_vocabulary_get_names();
+
+  // Loop through each existing vocabulary.
+  foreach ($vocabularies as $vid) {
+
+    // Delete the 'Authoring Information' fields.
+    TermAuthoringInfoManageFields::deleteFields($vid);
+
+    // Delete the 'Authoring Information' field group.
+    TermAuthoringInfoManageGroups::deleteGroup($vid);
+
+  }
+
+}
