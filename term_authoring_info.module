@@ -10,6 +10,13 @@ use Drupal\Core\Url;
  * Implements hook_form_FORM_ID_alter().
  *
  * Add 'Display authoring information' field to the vocabulary 'Edit' screen.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   An associative array containing the current state of the form.
+ * @param string
+ *   ID of the form.
  */
 function term_authoring_info_form_taxonomy_vocabulary_form_alter(&$form, &$form_state, $form_id) {
 
@@ -64,11 +71,17 @@ function term_authoring_info_form_taxonomy_vocabulary_form_alter(&$form, &$form_
 
 /**
  * Submit handler the 'Display authoring information' field.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   An associative array containing the current state of the form.
  */
 function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state) {
 
   // Retrieve the vocab ID.
   $vid = $form['vid']['#default_value'];
+  $checkbox_original = NULL;
 
   // #default_value is always populated except when
   // the vocabulary is first created; then use #value.
@@ -81,7 +94,7 @@ function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state
   $term_authoring_info_redirect = $form_state->getValue('term_authoring_info_redirect');
 
   // Set the checkbox state as a variable.
-  $checkbox = $form_state->getValue('term_authoring_info'); 
+  $checkbox = $form_state->getValue('term_authoring_info');
 
   // Attempt to load the entity configuration value for this vocabulary.
   $entity = \Drupal::entityTypeManager()->getStorage('vocab_display_status')->load($vid);
@@ -92,32 +105,42 @@ function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state
     // Create a new entity configuration value.
     $entity = \Drupal::entityManager()->getStorage('vocab_display_status')->create();
   }
-
-  // Update the entity with the new values.
-  $entity->id = $vid;
-  $entity->state = $checkbox;
-
-  // Save the changes. 
-  $entity->save();
-
-  // Determine if 'Authoring Information' fields should be created.
-  if ($checkbox == 1) {
-
-    // Create the 'Authoring Information' fields.
-    TermAuthoringInfoManageFields::createFields($vid);
-
-    // Create the 'Authoring Information' field group.
-    TermAuthoringInfoManageGroups::createGroup($vid);
-
-  }
-  // Otherwise, 'Authoring Information' fields should be deleted.
   else {
+    $checkbox_original = $entity->state;
+  }
 
-    // Delete the 'Authoring Information' fields.
-    TermAuthoringInfoManageFields::deleteFields($vid);
+  if ($checkbox != $checkbox_original) {
 
-    // Delete the 'Authoring Information' field group.
-    TermAuthoringInfoManageGroups::deleteGroup($vid);
+    $vocab = taxonomy_vocabulary_load($vid);
+    $vocab_name = ((!empty($vocab)) ? $vocab->label() : NULL);
+
+    // Determine if 'Authoring Information' fields should be created.
+    if ($checkbox == 1) {
+
+      // Create the 'Authoring Information' fields.
+      TermAuthoringInfoManageFields::createFields($vid);
+
+      // Create the 'Authoring Information' field group.
+      TermAuthoringInfoManageGroups::createGroup($vid);
+
+      $message = t('Authoring information has been added to the %vocab_name vocabulary.',
+        ['%vocab_name' => $vocab_name]
+      );
+      drupal_set_message($message);
+
+    }
+    // Otherwise, 'Authoring Information' fields should be deleted.
+    else {
+      $term_authoring_info_redirect = 'term_authoring_info.delete.interstitial';
+      $checkbox = 1;
+    }
+
+    // Update the entity with the new values.
+    $entity->id = $vid;
+    $entity->state = $checkbox;
+
+    // Save the changes. 
+    $entity->save();
 
   }
 
@@ -133,6 +156,13 @@ function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state
  * Implements hook_form_alter().
  *
  * Add a custom submit handler if a vocabulary includes Authoring Information.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   An associative array containing the current state of the form.
+ * @param string
+ *   ID of the form.
  */
 function term_authoring_info_form_alter(&$form, &$form_state, $form_id) {
 
@@ -155,6 +185,11 @@ function term_authoring_info_form_alter(&$form, &$form_state, $form_id) {
 
 /**
  * Submit handler for populating any blank 'Author Information' fields.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   An associative array containing the current state of the form.
  */
 function term_authoring_info_populate_empty_fields($form, &$form_state) {
 

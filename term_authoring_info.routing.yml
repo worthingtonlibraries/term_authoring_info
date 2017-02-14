@@ -1,5 +1,5 @@
 term_authoring_info.settings:
-  path: 'admin/config/content/term-authoring-info'
+  path: '/admin/config/content/term-authoring-info'
   defaults:
     # '_entity_list' tells Drupal to use an entity list controller.
     # The entity ID is below. Drupal then looks in the entity's annotation
@@ -12,5 +12,13 @@ term_authoring_info.settings:
 
 entity.vocab_display_status.edit_form:
   path: '/admin/structure/taxonomy/manage/{vocab_display_status}'
+  requirements:
+    _permission: 'administer taxonomy'
+
+term_authoring_info.delete.interstitial:
+  path: '/admin/config/content/term-authoring-info/delete'
+  defaults:
+    _form: '\Drupal\term_authoring_info\Form\TermAuthoringInfoDelete'
+    _title_callback: '\Drupal\term_authoring_info\Form\TermAuthoringInfoDelete::getTitle'
   requirements:
     _permission: 'administer taxonomy'
