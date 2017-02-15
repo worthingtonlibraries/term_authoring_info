@@ -8,7 +8,7 @@ Taxonomy Term Authoring Information
 Description
 -----------
 The Taxonomy Term Authoring Information module adds new fields (author,
-creation date) to a vocabulary, so authoring information can be recorded for
+creation date) to a vocabulary, so authoring information can be saved for
 each term. The fields include a user entity reference field ("Authored by")
 and a date field ("Authored on"), both of which get automatically populated
 upon submission if the fields are left blank.
@@ -40,7 +40,7 @@ Remove authoring information from a vocabulary
 
 Installation
 ------------
-Install this module following standard procedure:
+Install this module by following standard procedure:
 https://www.drupal.org/docs/8/extending-drupal-8/installing-modules
 
 Dependencies
