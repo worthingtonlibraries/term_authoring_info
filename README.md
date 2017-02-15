@@ -7,8 +7,8 @@ Taxonomy Term Authoring Information
 
 Description
 -----------
-The Taxonomy Term Authoring Information module adds new fields (author,
-date created) to a vocabulary, so authoring information can be saved for
+The Taxonomy Term Authoring Information module adds new fields (author, date
+created) to a vocabulary, allowing authoring information to be saved for
 each term. The fields include a user entity reference field ("Authored by")
 and a date field ("Authored on"), both of which get automatically populated
 upon submission if the fields are left blank.
