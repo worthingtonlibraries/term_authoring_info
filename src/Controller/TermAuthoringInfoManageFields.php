@@ -49,7 +49,7 @@ class TermAuthoringInfoManageFields {
         'entity_type' => 'taxonomy_term',
         'bundle' => $vid,
         'label' =>  t('Authored by'),
-        'description' => t('If left blank, the current logged in user will be assigned as the author.'),
+        'description' => t('The username of the content author. If left blank, the current logged in user will be used.'),
       ])->save();
 
       // Authored by: Set form display.
@@ -103,7 +103,9 @@ class TermAuthoringInfoManageFields {
         'entity_type' => 'taxonomy_term',
         'bundle' => $vid,
         'label' =>  t('Authored on'),
-        'description' => t('Format: yyyy-mm-dd hh:mm:ss.<br /> If left blank, the current date/time will be used.'),
+        'description' => t('Format: %format. Leave blank to use the time of form submission.',
+          ['%format' => 'yyyy-mm-dd hh:mm:ss']
+        ),
         'default_value' => [
           0 => [
             'default_date_type' => 'now',
