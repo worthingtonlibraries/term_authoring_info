@@ -9,7 +9,7 @@ use Drupal\Core\Url;
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Add 'Display authoring information' field to the vocabulary 'Edit' screen.
+ * Add 'Store authoring information' field to the vocabulary 'Edit' screen.
  *
  * @param array $form
  *   An associative array containing the structure of the form.
@@ -47,12 +47,12 @@ function term_authoring_info_form_taxonomy_vocabulary_form_alter(&$form, &$form_
   // Set the checkbox state for this vocabulary.
   $checkbox_value = ((!empty($entities[$vid])) ? $entities[$vid]->get('state') : 0);
 
-  //Create the 'Display authoring information' field.
+  //Create the 'Store authoring information' field.
   $form['term_authoring_info'] = [
     '#type' => 'checkbox',
-    '#title' => t('Display authoring information'),
+    '#title' => t('Store authoring information'),
     '#default_value' => $checkbox_value,
-    '#description' => t('Author username and publish date fields will be displayed.'),
+    '#description' => t('Author username and publish date will be stored in the database and available for display.'),
     '#weight' => 1,
   ];
 
@@ -63,14 +63,14 @@ function term_authoring_info_form_taxonomy_vocabulary_form_alter(&$form, &$form_
     '#default_value' => $term_authoring_info_redirect,
   ];
 
-  // Add a submit handler for the 'Display authoring information' field.
+  // Add a submit handler for the 'Store authoring information' field.
   $form['actions']['submit']['#submit'][] = 'term_authoring_info_taxonomy_vocabulary_form_submit';
 
 }
 
 
 /**
- * Submit handler the 'Display authoring information' field.
+ * Submit handler the 'Store authoring information' field.
  *
  * @param array $form
  *   An associative array containing the structure of the form.
