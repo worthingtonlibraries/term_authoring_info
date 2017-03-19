@@ -25,7 +25,7 @@ Add authoring information to a vocabulary
   Taxonomy term authoring information).
 * To add authoring information to a specific vocabulary,
   click the corresponding *Edit* button.
-* On the *Edit vocabulary* screen, check the "Display authoring information"
+* On the *Edit vocabulary* screen, check the "Store authoring information"
   box and click *Save*.
 * You should now see the fields "Authored On" and "Authored by" listed on
   the tabs *Manage fields*, *Manage form display* and *Manage display*.
@@ -35,7 +35,7 @@ contain any authoring data until the term is saved again.
 
 Remove authoring information from a vocabulary
 ----------------------------------------------
-* On the *Edit vocabulary* screen, uncheck the "Display authoring information"
+* On the *Edit vocabulary* screen, uncheck the "Store authoring information"
   box and click *Save*.
 * This will automatically delete the "Authored On" and "Authored by" fields,
   as well as their corresponding data.
