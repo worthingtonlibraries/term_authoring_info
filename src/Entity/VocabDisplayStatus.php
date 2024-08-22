@@ -47,8 +47,12 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "id",
  *     "label" = "label"
  *   },
+ *   config_export = {
+ *     "id",
+ *     "state"
+ *   },
  *   links = {
- *     "edit-form" = "/admin/structure/taxonomy/manage/{term_authoring_info}",
+ *     "edit-form" = "/admin/structure/taxonomy/manage/{vocab_display_status}",
  *   },
  * )
  */

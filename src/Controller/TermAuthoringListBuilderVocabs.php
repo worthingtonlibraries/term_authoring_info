@@ -36,7 +36,7 @@ class TermAuthoringListBuilderVocabs extends ConfigEntityListBuilder {
    */
   public function load() {
 
-    $vocabularies = taxonomy_vocabulary_get_names();
+    $vocabularies = \Drupal::entityQuery('taxonomy_vocabulary')->execute();
 
     // Loop through each existing vocabulary.
     foreach ($vocabularies as $vid) {
@@ -47,7 +47,7 @@ class TermAuthoringListBuilderVocabs extends ConfigEntityListBuilder {
       // Determine if authoring info for this vocabulary is missing.
       if (empty($entity)) {
         // Create a new entity configuration value.
-        $entity = \Drupal::entityManager()->getStorage('vocab_display_status')->create();
+        $entity = \Drupal::entityTypeManager()->getStorage('vocab_display_status')->create();
 
         // Update the enity with values.
         $entity->id = $vid;

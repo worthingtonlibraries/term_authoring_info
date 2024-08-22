@@ -21,7 +21,7 @@ class TermAuthoringInfoManageFields {
     /**** AUTHORED BY ****/
 
     $field_id = 'taxonomy_term.' . $vid . '.field_term_authoring_info_uid';
-    $field = \Drupal::entityManager()->getStorage('field_config')->load($field_id);
+    $field = \Drupal::entityTypeManager()->getStorage('field_config')->load($field_id);
 
     // Ensure the 'Authored by' (user) field doesn't exist yet.
     if (empty($field)) {
@@ -53,13 +53,13 @@ class TermAuthoringInfoManageFields {
       ])->save();
 
       // Authored by: Set form display.
-      entity_get_form_display('taxonomy_term', $vid, 'default')
+      \Drupal::service('entity_display.repository')->getFormDisplay('taxonomy_term', $vid, 'default')
         ->setComponent('field_term_authoring_info_uid', [
           'type' => 'entity_reference_autocomplete',
       ])->save();
 
       // Authored by: Set display.
-      entity_get_display('taxonomy_term', $vid, 'default')
+      \Drupal::service('entity_display.repository')->getViewDisplay('taxonomy_term', $vid, 'default')
         ->setComponent('field_term_authoring_info_uid', [
           'type' => 'author',
       ])->save();
@@ -76,7 +76,7 @@ class TermAuthoringInfoManageFields {
     /**** AUTHORED ON ****/
 
     $field_id = 'taxonomy_term.' . $vid . '.field_term_authoring_datecreated';
-    $field = \Drupal::entityManager()->getStorage('field_config')->load($field_id);
+    $field = \Drupal::entityTypeManager()->getStorage('field_config')->load($field_id);
 
     // Ensure the 'Authored on' (date) field doesn't exist yet.
     if (empty($field)) {
@@ -115,13 +115,13 @@ class TermAuthoringInfoManageFields {
       ])->save();
 
       // Authored on: Set form display.
-      entity_get_form_display('taxonomy_term', $vid, 'default')
+      \Drupal::service('entity_display.repository')->getFormDisplay('taxonomy_term', $vid, 'default')
         ->setComponent('field_term_authoring_datecreated', [
           'type' => 'datetime_default',
       ])->save();
 
       //Authored on: Create field storage.
-      entity_get_display('taxonomy_term', $vid, 'default')
+      \Drupal::service('entity_display.repository')->getViewDisplay('taxonomy_term', $vid, 'default')
         ->setComponent('field_term_authoring_datecreated', [
           'type' => 'datetime_default',
       ])->save();

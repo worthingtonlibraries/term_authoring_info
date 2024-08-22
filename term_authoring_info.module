@@ -43,7 +43,7 @@ function term_authoring_info_form_taxonomy_vocabulary_form_alter(&$form, &$form_
     $vid = $form['vid']['#value'];
   }
 
-  $entities = entity_load_multiple('vocab_display_status');
+  $entities = \Drupal::entityTypeManager()->getStorage('vocab_display_status')->loadMultiple();
   // Set the checkbox state for this vocabulary.
   $checkbox_value = ((!empty($entities[$vid])) ? $entities[$vid]->get('state') : 0);
 
@@ -111,7 +111,7 @@ function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state
 
   if ($checkbox != $checkbox_original) {
 
-    $vocab = taxonomy_vocabulary_load($vid);
+    $vocab = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
     $vocab_name = ((!empty($vocab)) ? $vocab->label() : NULL);
 
     // Determine if 'Authoring Information' fields should be created.
@@ -126,7 +126,7 @@ function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state
       $message = t('Authoring information has been added to the %vocab_name vocabulary.',
         ['%vocab_name' => $vocab_name]
       );
-      drupal_set_message($message);
+      \Drupal::messenger()->addMessage($message);
 
     }
     // Otherwise, 'Authoring Information' fields should be deleted.

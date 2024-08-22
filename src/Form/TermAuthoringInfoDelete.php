@@ -138,7 +138,7 @@ class TermAuthoringInfoDelete extends FormBase {
 
     $vid = $form_state->getValue('vocab_id');
 
-    $vocab = taxonomy_vocabulary_load($vid);
+    $vocab = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
     $vocab_name = ((!empty($vocab)) ? $vocab->label() : NULL);
 
     $message = t('Authoring information has been deleted for the %vocab_name vocabulary.',
@@ -185,7 +185,7 @@ class TermAuthoringInfoDelete extends FormBase {
       $arg = explode('/', $url_previous);
       $vid = $arg[count($arg) - 1];
       // Retrieve the vocabulary ID from the end of the referring URL.
-      $vocab = taxonomy_vocabulary_load($vid);
+      $vocab = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
     }
 
     return $vocab;
