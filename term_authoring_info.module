@@ -103,7 +103,7 @@ function term_authoring_info_taxonomy_vocabulary_form_submit($form, &$form_state
   // for this vocabulary doesn't exist yet.
   if (empty($entity)) {
     // Create a new entity configuration value.
-    $entity = \Drupal::entityManager()->getStorage('vocab_display_status')->create();
+    $entity = \Drupal::entityTypeManager()->getStorage('vocab_display_status')->create();
   }
   else {
     $checkbox_original = $entity->state;
